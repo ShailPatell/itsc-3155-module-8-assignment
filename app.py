@@ -3,6 +3,7 @@ from src.repositories.movie_repository import movie_repository_singleton
 
 app = Flask(__name__)
 
+movie_repository_singleton.create_movie("This Hill", "Edward", 5.0)
 
 @app.get('/')
 def index():
@@ -34,3 +35,18 @@ def create_movie():
 def search_movies():
     # TODO: Feature 3
     return render_template('search_movies.html', search_active=True)
+
+@app.route('/movies/display', methods=['POST','GET'])
+def display_movies():
+    movie_name = request.form.get('movie_name')
+    title=""
+    rating=0
+    finding_movie = movie_repository_singleton.get_movie_by_title(movie_name)
+    if(request.method=='POST'):
+        if(finding_movie==None):
+            title = "Movie is not Found"
+            rating = "There is no rating"
+        else:
+            title = finding_movie.title
+            rating = finding_movie.rating
+    return render_template('display_rating.html', title=title, rating=rating,)
